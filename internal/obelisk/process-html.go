@@ -524,6 +524,13 @@ func (arc *Archiver) processLinkNode(ctx context.Context, node *html.Node, baseU
 }
 
 func (arc *Archiver) processScriptNode(ctx context.Context, node *html.Node, baseURL *nurl.URL) error {
+	if dom.GetAttribute(node, "type") == "text/template" {
+		result, err := arc.processHTML(ctx, strings.NewReader(dom.TextContent(node)), baseURL)
+		if err != nil {
+			return err
+		}
+		dom.SetTextContent(node, result)
+	}
 	if !dom.HasAttribute(node, "src") {
 		return nil
 	}
